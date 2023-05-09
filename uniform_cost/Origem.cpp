@@ -105,6 +105,117 @@ path uniformCost(int source, int destination, int matrix[n_cities][n_cities]) {
 		}
 	}
 }
+
+path greedy_search(int source, int matrix[n_cities][n_cities],int info[n_cities]) {
+
+	vector<path> work_arr;
+	if (source == 12) {
+		return path(0, source, { source });
+	}
+	else {
+		vector<int> visited;
+		work_arr.push_back({ info[source],source,{source}});
+		while (1) {
+			// Debug Only Line: 
+			/*for (int j = 0; j < work_arr.size(); j++) {
+				for (int k = 0; k < work_arr[j].path_to.size(); k++) {
+					cout << work_arr[j].path_to[k] << " ";
+				}
+
+				cout <<"cost "<<work_arr[j].cost << " current: " << work_arr[j].current << endl;
+			}
+			cout << "iteration" << endl;
+			*/
+			bool already_visited = false;
+			for (int j = 0; j < visited.size(); j++) {
+				if (visited[j] == work_arr[0].current) {
+					already_visited = true;
+
+				}
+				//cout << visited[j]<<" ";
+			}
+			//cout << "--------------------"<<endl;
+			if (already_visited == false) {
+				for (int i = 0; i < n_cities; i++) {
+					if (matrix[work_arr[0].current][i] > 0) {
+						{
+							path temp = {info[i],	i,	work_arr[0].path_to};
+							temp.path_to.push_back(i);
+							work_arr.push_back(temp);
+
+						}
+
+					}
+
+				}
+
+				visited.push_back(work_arr[0].current);
+			}
+
+			work_arr.erase(work_arr.begin());
+			sort(work_arr.begin(), work_arr.end());
+			if (work_arr[0].current == 12) {
+				return work_arr[0];
+			}
+		}
+	}
+}
+
+path a_star_search(int source, int matrix[n_cities][n_cities], int info[n_cities]) {
+	vector<path> work_arr;
+	if (source == 12) {
+		return path(0, source, { source });
+	}
+	else {
+		vector<int> visited;
+		work_arr.push_back({ 0,source,{source} });
+		while (1) {
+			// Debug Only Line: 
+			/*for (int j = 0; j < work_arr.size(); j++) {
+				for (int k = 0; k < work_arr[j].path_to.size(); k++) {
+					cout << work_arr[j].path_to[k] << " ";
+				}
+
+				cout <<"cost "<<work_arr[j].cost << " current: " << work_arr[j].current << endl;
+			}
+			cout << "iteration" << endl;
+			*/
+			bool already_visited = false;
+			for (int j = 0; j < visited.size(); j++) {
+				if (visited[j] == work_arr[0].current) {
+					already_visited = true;
+
+				}
+				//cout << visited[j]<<" ";
+			}
+			//cout << "--------------------"<<endl;
+			if (already_visited == false) {
+				for (int i = 0; i < n_cities; i++) {
+					if (matrix[work_arr[0].current][i] > 0) {
+						{
+							int last_idx = work_arr[0].path_to.size();
+							path temp = { matrix[work_arr[0].current][i] + work_arr[0].cost + info[i]  - info[work_arr[0].path_to[last_idx-1]],	i,	work_arr[0].path_to};
+							temp.path_to.push_back(i);
+							work_arr.push_back(temp);
+
+						}
+
+					}
+
+				}
+
+				visited.push_back(work_arr[0].current);
+			}
+
+			work_arr.erase(work_arr.begin());
+			sort(work_arr.begin(), work_arr.end());
+			if (work_arr[0].current == 12) {
+				return work_arr[0];
+			}
+		}
+	}
+}
+
 	//primeiro passo, checar se meu nó source é igual meu nó destino, ou seja, se eu já estou onde quero chegar
 	//em caso positivo apenas retorno.
 
@@ -152,7 +263,14 @@ int main() {
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,92,0,87},//lasi             18
 	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,87,0} }; // neamt         19
 	
+
+	int inline_dist_to_bucharest[] = { 380,374,366,253,176,329,244,193,100,241,242,160,0,77,80,151,161,199, 226,234 };
+
 	bool exit = false;
+
+	path t = a_star_search(2,map,inline_dist_to_bucharest);
+	std::cout << convertPath(t.path_to) << endl;
+
 
 	while (!exit) {
 		string cityA, cityB;
